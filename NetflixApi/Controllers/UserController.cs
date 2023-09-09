@@ -10,39 +10,70 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BCrypt.Net;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace MongoWithDotNetAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/UsersAuth")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly UserServices _userService;
         private readonly IConfiguration _configuration;
+        protected APIResponse _response;
         private readonly string secretKey;
 
         public UserController(UserServices userService, IConfiguration configuration)
         {
             _userService = userService;
             _configuration = configuration;
+            _response = new();
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Signup([FromBody] LocalUsers newUser)
+        public async Task<IActionResult> Signup([FromBody] RegistrationRequest newUser)
         {
+           
             try
-            {
-                var user = await _userService.SignupAsync(newUser);
-                if (user == null)
+            {  // check if there is any existing users 
+                var existingUser = await _userService.GetAsync(newUser.UserName);
+                if (existingUser != null)
                 {
-                    return BadRequest("Username already exists.");
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Username already exists");
+                    return BadRequest(_response);
                 }
 
-                var token = GenerateJwtToken(user);
-                return Ok(new { Token = token });
+
+                // Hashing the user's password before storing it
+                //string hashedPassword = BCrypt.Net.BCrypt.HashPassword(newUser.Password);
+                //newUser.Password = hashedPassword;
+
+                //add the users 
+                var user = await _userService.SignupAsync(newUser);
+                if (user == null )
+                {
+
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Error while registering");
+                    return BadRequest(_response);
+
+                }
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                return Ok(_response);
+
+
+
+
+                //var token = GenerateJwtToken(user);
+                //return Ok(new { Token = token });
             }
             catch (Exception ex)
             {
@@ -55,15 +86,30 @@ namespace MongoWithDotNetAPI.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             try
-            {
+            { // input 
                 var user = await _userService.LoginAsync(loginModel.UserName, loginModel.Password);
                 if (user == null)
                 {
-                    return Unauthorized("Invalid username or password.");
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Username or password is incorrect");
+                    return BadRequest(_response);
                 }
 
+                //verify the hashed password 
+                //bool isvalid = BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password);
+                //if(!isvalid)
+                //{
+                //    return Unauthorized("Invalid username or passwordss.");
+                //}
+
+
                 var token = GenerateJwtToken(user);
-                return Ok(new { Token = token });
+                    return Ok(new { Token = token });
+              
+               
+
+
             }
             catch (Exception ex)
             {
@@ -80,7 +126,7 @@ namespace MongoWithDotNetAPI.Controllers
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    // Add other claims as needed (e.g., user roles, additional user data)
+                    
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -91,5 +137,6 @@ namespace MongoWithDotNetAPI.Controllers
 
             return tokenHandler.WriteToken(token);
         }
+       
     }
 }
