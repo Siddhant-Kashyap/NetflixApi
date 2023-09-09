@@ -13,7 +13,7 @@ namespace NetflixApi.Services
         {
             var mongoClient = new MongoClient(userDataContext.Value.ConnectionString);
             var mongoDatabase = mongoClient.GetDatabase(userDataContext.Value.DatabaseName);
-            _userCollection = mongoDatabase.GetCollection<LocalUsers>(userDataContext.Value.DatabaseName);
+            _userCollection = mongoDatabase.GetCollection<LocalUsers>(userDataContext.Value.UserCollectionName);
 
         }
         public async Task<LocalUsers> SignupAsync(LocalUsers newUser)
