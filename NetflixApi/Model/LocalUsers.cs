@@ -9,6 +9,7 @@ namespace NetflixApi.Model
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public ObjectId Id { get; set; }
+
         [BsonElement("UserName")]
         public string UserName { get; set; }
         [BsonElement("Password")]

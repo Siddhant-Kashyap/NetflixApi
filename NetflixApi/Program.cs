@@ -18,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<UserDataContext>(builder.Configuration.GetSection("UserDatabase"));
 builder.Services.AddSingleton<UserServices>();
+builder.Services.AddSingleton<SubscriptionServices>();
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
 builder.Services.AddAuthentication(x =>

@@ -13,7 +13,7 @@ namespace NetflixApi.Services
         {
             var mongoClient = new MongoClient(userDataContext.Value.ConnectionString);
             var mongoDatabase = mongoClient.GetDatabase(userDataContext.Value.DatabaseName);
-            _userCollection = mongoDatabase.GetCollection<LocalUsers>(userDataContext.Value.DatabaseName);
+            _userCollection = mongoDatabase.GetCollection<LocalUsers>(userDataContext.Value.UserCollectionName);
 
         }
         //user registration this is to register individual user 
