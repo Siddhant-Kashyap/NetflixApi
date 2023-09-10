@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using MongoWithDotNetAPI.DAta;
+using NetflixApi.Data;
 using NetflixApi.Services;
 using System.Text;
 
@@ -17,7 +18,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<UserDataContext>(builder.Configuration.GetSection("UserDatabase"));
+builder.Services.Configure<UserFeedbackDataContext>(builder.Configuration.GetSection("UserDatabase"));
 builder.Services.AddSingleton<UserServices>();
+builder.Services.AddSingleton<UserFeedbackService>();
+
+
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
 builder.Services.AddAuthentication(x =>
