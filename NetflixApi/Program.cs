@@ -19,6 +19,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<UserDataContext>(builder.Configuration.GetSection("UserDatabase"));
 builder.Services.AddSingleton<UserServices>();
 builder.Services.AddSingleton<SubscriptionServices>();
+builder.Services.AddSingleton<MovieListServices>(); 
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
 builder.Services.AddAuthentication(x =>

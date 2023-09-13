@@ -9,6 +9,7 @@ namespace NetflixApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     
     public class SubscriptionController : ControllerBase
     {
