@@ -20,6 +20,7 @@ builder.Services.Configure<UserDataContext>(builder.Configuration.GetSection("Us
 builder.Services.AddSingleton<UserServices>();
 builder.Services.AddSingleton<SubscriptionServices>();
 builder.Services.AddSingleton<MovieListServices>(); 
+builder.Services.AddSingleton<VideoServices>();
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
 builder.Services.AddAuthentication(x =>
