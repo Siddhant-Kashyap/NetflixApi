@@ -34,6 +34,7 @@ namespace NetflixApi.Controllers
             }
         }
         [HttpGet("{userId}")]
+        [Authorize]
         public async Task<ActionResult<MovieList>> GetUserMovieList(string userId)
         {
             try
