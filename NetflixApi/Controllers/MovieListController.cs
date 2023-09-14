@@ -33,5 +33,27 @@ namespace NetflixApi.Controllers
                 return NotFound("User not found");
             }
         }
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<MovieList>> GetUserMovieList(string userId)
+        {
+            try
+            {
+                var movieList = await _services.GetUserMovieListAsync(userId);
+
+                if (movieList != null)
+                {
+                    return Ok(movieList);
+                }
+                else
+                {
+                    return NotFound($"Movie list not found for user with ID: {userId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions as needed, log, and return an error response.
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
     }
 }

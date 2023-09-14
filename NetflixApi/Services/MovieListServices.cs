@@ -43,5 +43,12 @@ namespace NetflixApi.Services
                 return true;
             }
         }
+        public async Task<MovieList> GetUserMovieListAsync(string userId)
+        {
+            var filter = Builders<MovieList>.Filter.Eq(x => x.UserId, userId);
+            var userMovieList = await _movieListCollection.Find(filter).FirstOrDefaultAsync();
+
+            return userMovieList;
+        }
     }
 }
