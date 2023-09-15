@@ -17,12 +17,12 @@ namespace NetflixApi.Services
         }
 
 
-        public List<Subscription> GetSubscriptionsByUserId(string userId)
+        public async Task<List<Subscription>> GetSubscriptionsByUserIdAsync(string userId)
         {
-            var subscriptions = _subscriptionCollection.Find(s => s.UserId == userId).ToList();
+            var filter = Builders<Subscription>.Filter.Eq(s => s.UserId, userId);
+            var subscriptions = await _subscriptionCollection.Find(filter).ToListAsync();
             return subscriptions;
         }
-
         public void CreateSubscription(Subscription subscription)
         {
             _subscriptionCollection.InsertOne(subscription);

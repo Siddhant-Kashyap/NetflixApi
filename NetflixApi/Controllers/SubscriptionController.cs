@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Amazon.Runtime.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -7,10 +8,11 @@ using NetflixApi.Services;
 
 namespace NetflixApi.Controllers
 {
+  
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize]
-    
+   
     public class SubscriptionController : ControllerBase
     {
         private readonly SubscriptionServices _subscriptionService;
@@ -18,12 +20,20 @@ namespace NetflixApi.Controllers
         {
             _subscriptionService = subscriptionServices;
         }
-        [HttpGet("{userId}")]
-        public IActionResult GetSubscriptionsByUserId(string userId)
+        [HttpPost("{userId}")]
+        public async Task<IActionResult> GetSubscriptionsByUserId([FromBody] UserIdRequest request)
         {
-            var subscriptions = _subscriptionService.GetSubscriptionsByUserId(userId);
+            var userId = request.UserId;
+            var subscriptions = await _subscriptionService.GetSubscriptionsByUserIdAsync(userId);
+
+            if (subscriptions == null || subscriptions.Count == 0)
+            {
+                return Ok("No subscriptions found for the specified user.");
+            }
+
             return Ok(subscriptions);
         }
+
 
         [HttpPost]
         public IActionResult CreateSubscription(Subscription subscription)
