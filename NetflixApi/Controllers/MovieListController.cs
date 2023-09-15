@@ -18,7 +18,7 @@ namespace NetflixApi.Controllers
             
         }
 
-        [HttpPut("{userId}")]
+        [HttpPost("{userId}")]
         [Authorize]
         public async Task<IActionResult> UpdateMovieNames(string userId, [FromBody] List<string> newMovieNames)
         {
@@ -33,9 +33,11 @@ namespace NetflixApi.Controllers
                 return NotFound("User not found");
             }
         }
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<MovieList>> GetUserMovieList(string userId)
+        [HttpPost]
+       // [Authorize]
+        public async Task<ActionResult<MovieList>> GetUserMovieList(MovieListReq request)
         {
+            var userId = request.UserId;
             try
             {
                 var movieList = await _services.GetUserMovieListAsync(userId);

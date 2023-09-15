@@ -16,11 +16,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(policyBuilder =>
+    policyBuilder.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod())
+);
+
 builder.Services.Configure<UserDataContext>(builder.Configuration.GetSection("UserDatabase"));
 builder.Services.AddSingleton<UserServices>();
 builder.Services.AddSingleton<SubscriptionServices>();
 builder.Services.AddSingleton<MovieListServices>(); 
 builder.Services.AddSingleton<VideoServices>();
+
+
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
 builder.Services.AddAuthentication(x =>
@@ -49,6 +56,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 
