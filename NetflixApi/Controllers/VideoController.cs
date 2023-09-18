@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetflixApi.Model;
 using NetflixApi.Services;
 
 namespace NetflixApi.Controllers
@@ -15,9 +16,10 @@ namespace NetflixApi.Controllers
         }
 
 
-        [HttpGet("{videoId}")]
-        public async Task<IActionResult> PlayVideo(string videoId)
+        [HttpPost]
+        public async Task<IActionResult> PlayVideo(VideoIdReq request)
         {
+            var videoId = request.videoId;
             var video = await _videoServices.GetVideoByIdAsync(videoId);
 
             if (video != null && video.Data != null)

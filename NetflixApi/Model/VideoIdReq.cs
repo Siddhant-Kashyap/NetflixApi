@@ -2,5 +2,6 @@
 {
     public class VideoIdReq
     {
+        public string videoId { get; set; }
     }
 }
